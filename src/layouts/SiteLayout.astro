@@ -1,0 +1,20 @@
+---
+import SeoHead from "../components/SeoHead.astro";
+import { yangsanSulbi as site } from "../site/config";
+import "../styles/global.css";
+
+const path = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <SeoHead site={site} path={path} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <slot name="head" />
+  </head>
+  <body data-site={site.siteId}>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <slot />
+  </body>
+</html>

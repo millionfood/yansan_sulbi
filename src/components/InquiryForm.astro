@@ -1,0 +1,866 @@
+---
+import { getApiBase } from "../lib/inquiry";
+import { yangsanSulbi as site } from "../site/config";
+
+const apiBase = getApiBase();
+const pageUrl = Astro.url.href;
+const symptomGroups = site.symptomGroups ?? [];
+const hasGroups = symptomGroups.length > 0;
+const privacyConsentLabel =
+  site.copy.privacyConsentLabel ?? "개인정보 수집 및 이용에 동의합니다.";
+const privacyNotice = site.copy.privacyNotice ?? {
+  purpose: "서비스 문의 접수, 상담 연락 및 일정 안내",
+  items: "이름, 연락처, 주소(선택), 요청 내용, 메모(선택)",
+  retention: "문의 처리 완료 후 3개월간 보관 후 파기 (관련 법령에 별도 의무가 있는 경우 해당 기간)",
+};
+---
+
+<section class="inquiry" id="inquiry" aria-labelledby="inquiry-title">
+  <div class="container">
+    <div class="inquiry__shell" data-inquiry-root>
+      <aside class="inquiry__aside">
+        <p class="inquiry__eyebrow">INQUIRY</p>
+        <h2 id="inquiry-title" class="inquiry__title display">{site.copy.formTitle}</h2>
+        <p class="inquiry__support">{site.copy.formSupport}</p>
+
+        <div class="inquiry__contact">
+          <p class="inquiry__contact-label">빠른 전화 상담</p>
+          <a class="inquiry__phone display" href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
+          <p class="inquiry__contact-note">급하면 전화, 여유 있으면 아래 폼으로 남겨 주세요.</p>
+        </div>
+
+        <ul class="inquiry__notes">
+          <li>이름·연락처만 있어도 접수됩니다</li>
+          <li>확인 후 빠른 시간 안에 연락드립니다</li>
+          <li>동의 전 공사는 진행하지 않습니다</li>
+        </ul>
+      </aside>
+
+      <div class="inquiry__panel">
+        <form class="inquiry__form" data-inquiry-form novalidate>
+          <input type="hidden" name="siteId" value={site.siteId} />
+          <input type="hidden" name="pageUrl" value={pageUrl} />
+
+          <div class="field-row">
+            <div class="field">
+              <label for="name">이름</label>
+              <input id="name" name="name" type="text" autocomplete="name" required maxlength="50" placeholder="홍길동" />
+            </div>
+
+            <div class="field">
+              <label for="phone">연락처</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                autocomplete="tel"
+                inputmode="numeric"
+                required
+                maxlength="13"
+                placeholder="010-0000-0000"
+                data-phone
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="address">주소 <span class="optional">선택</span></label>
+            <input
+              id="address"
+              name="address"
+              type="text"
+              autocomplete="street-address"
+              maxlength="200"
+              placeholder={`${site.region} 지역 주소`}
+            />
+          </div>
+
+          {
+            hasGroups ? (
+              <>
+                <fieldset class="field field--place">
+                  <legend>{site.copy.placeTypeLabel ?? "현장 유형"}</legend>
+                  <div class="place-types" role="radiogroup" aria-label={site.copy.placeTypeLabel ?? "현장 유형"}>
+                    {symptomGroups.map((group) => (
+                      <label class="place-type">
+                        <input type="radio" name="placeType" value={group.id} data-place-type required />
+                        <span class="place-type__card">
+                          <span class="place-type__label">{group.label}</span>
+                          <span class="place-type__hint">
+                            {group.id === "home"
+                              ? "아파트·주택"
+                              : group.id === "shop"
+                                ? "상점·사무실"
+                                : "공장·작업장"}
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <fieldset class="field field--symptoms" data-symptoms-panel hidden>
+                  <legend>{site.copy.symptomsLabel}</legend>
+                  <p class="field-hint">해당하는 증상을 모두 골라 주세요</p>
+                  {symptomGroups.map((group) => (
+                    <div class="symptoms" data-symptom-group={group.id} hidden>
+                      {group.options.map((opt) => (
+                        <label class="symptom">
+                          <input type="checkbox" name="symptoms" value={opt} disabled />
+                          <span>{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                  ))}
+                </fieldset>
+              </>
+            ) : (
+              <fieldset class="field field--symptoms">
+                <legend>{site.copy.symptomsLabel}</legend>
+                <div class="symptoms">
+                  {site.symptomOptions.map((opt) => (
+                    <label class="symptom">
+                      <input type="checkbox" name="symptoms" value={opt} />
+                      <span>{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )
+          }
+
+          <div class="field">
+            <label for="memo">메모 <span class="optional">선택</span></label>
+            <textarea
+              id="memo"
+              name="memo"
+              rows="3"
+              maxlength="1000"
+              placeholder="언제부터인지, 급한 정도 등 짧게 적어 주세요"
+            ></textarea>
+          </div>
+
+          <div class="consent-row">
+            <label class="consent">
+              <input type="checkbox" name="privacyConsent" value="1" required data-privacy-consent />
+              <span>{privacyConsentLabel}</span>
+            </label>
+            <button type="button" class="consent__view" data-privacy-open aria-haspopup="dialog">
+              [보기]
+            </button>
+          </div>
+
+          <div class="inquiry__actions">
+            <button class="btn btn-primary inquiry__submit" type="submit" data-submit>
+              {site.copy.ctaPrimary}
+            </button>
+            <p class="inquiry__fine">남겨 주시면 확인 후 연락드립니다</p>
+          </div>
+
+          <p class="inquiry__status" data-status role="status" aria-live="polite" hidden></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <dialog class="privacy-dialog" data-privacy-dialog aria-labelledby="privacy-dialog-title">
+    <div class="privacy-dialog__panel">
+      <div class="privacy-dialog__head">
+        <h3 id="privacy-dialog-title" class="display">개인정보 수집 및 이용 안내</h3>
+        <button type="button" class="privacy-dialog__close" data-privacy-close aria-label="닫기">
+          ×
+        </button>
+      </div>
+      <dl class="privacy-dialog__list">
+        <div>
+          <dt>수집 목적</dt>
+          <dd>{privacyNotice.purpose}</dd>
+        </div>
+        <div>
+          <dt>수집 항목</dt>
+          <dd>{privacyNotice.items}</dd>
+        </div>
+        <div>
+          <dt>보유 기간</dt>
+          <dd>{privacyNotice.retention}</dd>
+        </div>
+      </dl>
+      <p class="privacy-dialog__note">
+        동의를 거부할 수 있으나, 이 경우 문의 접수가 제한될 수 있습니다.
+      </p>
+      <button type="button" class="btn btn-primary privacy-dialog__ok" data-privacy-close>
+        확인
+      </button>
+    </div>
+  </dialog>
+</section>
+
+<script
+  define:vars={{
+    apiBase,
+    successMessage: site.copy.successMessage,
+    errorMessage: site.copy.errorMessage,
+    placeTypeLabels: Object.fromEntries(symptomGroups.map((g) => [g.id, g.label])),
+    hasGroups,
+  }}
+>
+  const form = document.querySelector("[data-inquiry-form]");
+  const statusEl = document.querySelector("[data-status]");
+  const submitBtn = document.querySelector("[data-submit]");
+  const placeTypeInputs = document.querySelectorAll("[data-place-type]");
+  const symptomsPanel = document.querySelector("[data-symptoms-panel]");
+  const phoneInput = document.querySelector("[data-phone]");
+  const privacyDialog = document.querySelector("[data-privacy-dialog]");
+  const privacyOpen = document.querySelector("[data-privacy-open]");
+  const privacyCloseButtons = document.querySelectorAll("[data-privacy-close]");
+
+  if (privacyDialog instanceof HTMLDialogElement) {
+    privacyOpen?.addEventListener("click", () => {
+      privacyDialog.showModal();
+    });
+
+    privacyCloseButtons.forEach((btn) => {
+      btn.addEventListener("click", () => privacyDialog.close());
+    });
+
+    privacyDialog.addEventListener("click", (event) => {
+      if (event.target === privacyDialog) privacyDialog.close();
+    });
+  }
+
+  function formatKoreanPhone(raw) {
+    const digits = String(raw).replace(/\D/g, "").slice(0, 11);
+    if (!digits) return "";
+
+    if (digits.startsWith("02")) {
+      if (digits.length <= 2) return digits;
+      if (digits.length <= 5) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+      if (digits.length <= 9) {
+        return `${digits.slice(0, 2)}-${digits.slice(2, 5)}-${digits.slice(5)}`;
+      }
+      return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6)}`;
+    }
+
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    if (digits.length <= 10) {
+      return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+    }
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  }
+
+  if (phoneInput instanceof HTMLInputElement) {
+    phoneInput.addEventListener("input", () => {
+      phoneInput.value = formatKoreanPhone(phoneInput.value);
+    });
+  }
+
+  function selectedPlaceType() {
+    const checked = document.querySelector('[data-place-type]:checked');
+    return checked instanceof HTMLInputElement ? checked.value : "";
+  }
+
+  function syncSymptomGroups(placeType) {
+    if (!(symptomsPanel instanceof HTMLElement)) return;
+
+    const groups = form?.querySelectorAll("[data-symptom-group]") ?? [];
+    let matched = false;
+
+    groups.forEach((group) => {
+      if (!(group instanceof HTMLElement)) return;
+      const active = Boolean(placeType) && group.dataset.symptomGroup === placeType;
+      group.hidden = !active;
+      if (active) matched = true;
+
+      group.querySelectorAll('input[name="symptoms"]').forEach((input) => {
+        if (!(input instanceof HTMLInputElement)) return;
+        input.disabled = !active;
+        if (!active) input.checked = false;
+      });
+    });
+
+    symptomsPanel.hidden = !matched;
+  }
+
+  placeTypeInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+      syncSymptomGroups(selectedPlaceType());
+    });
+  });
+  syncSymptomGroups(selectedPlaceType());
+
+  if (form instanceof HTMLFormElement && statusEl instanceof HTMLElement) {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      statusEl.hidden = true;
+      statusEl.textContent = "";
+      statusEl.dataset.kind = "";
+
+      const fd = new FormData(form);
+      const placeType = String(fd.get("placeType") || "").trim();
+      const placeLabel =
+        hasGroups && placeType && placeTypeLabels[placeType]
+          ? String(placeTypeLabels[placeType])
+          : "";
+      const selectedSymptoms = fd.getAll("symptoms").map(String).filter(Boolean);
+      const symptoms = placeLabel
+        ? [placeLabel, ...selectedSymptoms]
+        : selectedSymptoms;
+
+      const payload = {
+        siteId: String(fd.get("siteId") || ""),
+        name: String(fd.get("name") || "").trim(),
+        phone: String(fd.get("phone") || "").trim(),
+        address: String(fd.get("address") || "").trim(),
+        symptoms,
+        memo: String(fd.get("memo") || "").trim(),
+        pageUrl: window.location.href || String(fd.get("pageUrl") || ""),
+      };
+
+      if (!payload.name || !payload.phone) {
+        statusEl.hidden = false;
+        statusEl.dataset.kind = "error";
+        statusEl.textContent = "이름과 연락처를 입력해 주세요.";
+        return;
+      }
+
+      if (fd.get("privacyConsent") !== "1") {
+        statusEl.hidden = false;
+        statusEl.dataset.kind = "error";
+        statusEl.textContent = "개인정보 수집 및 이용에 동의해 주세요.";
+        return;
+      }
+
+      if (hasGroups && !placeType) {
+        statusEl.hidden = false;
+        statusEl.dataset.kind = "error";
+        statusEl.textContent = "현장 유형을 선택해 주세요.";
+        return;
+      }
+
+      if (!apiBase) {
+        statusEl.hidden = false;
+        statusEl.dataset.kind = "error";
+        statusEl.textContent = errorMessage + " (API 주소 미설정)";
+        return;
+      }
+
+      if (submitBtn instanceof HTMLButtonElement) submitBtn.disabled = true;
+
+      try {
+        const res = await fetch(`${apiBase}/api/inquiries`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        let data = null;
+        try {
+          data = await res.json();
+        } catch {
+          data = null;
+        }
+
+        statusEl.hidden = false;
+        if (res.status === 201 && data && data.ok === true) {
+          statusEl.dataset.kind = "ok";
+          statusEl.textContent = successMessage;
+          form.reset();
+          syncSymptomGroups("");
+        } else {
+          const detail =
+            data && data.error && data.error.message
+              ? ` (${data.error.message})`
+              : "";
+          statusEl.dataset.kind = "error";
+          statusEl.textContent = errorMessage + detail;
+        }
+      } catch {
+        statusEl.hidden = false;
+        statusEl.dataset.kind = "error";
+        statusEl.textContent = errorMessage;
+      } finally {
+        if (submitBtn instanceof HTMLButtonElement) submitBtn.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .inquiry {
+    padding: 0 0 4rem;
+  }
+
+  .inquiry__shell {
+    display: grid;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: 0.85rem;
+    background: var(--color-bg-elevated);
+    box-shadow: 0 22px 48px rgba(11, 28, 51, 0.08);
+  }
+
+  .inquiry__aside {
+    padding: clamp(1.5rem, 3vw, 2.2rem);
+    background:
+      radial-gradient(520px 220px at 0% 0%, rgba(26, 111, 212, 0.22), transparent 60%),
+      linear-gradient(165deg, #071833, #0c2a52);
+    color: #eef5ff;
+  }
+
+  .inquiry__eyebrow {
+    margin: 0 0 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #7eb6ff;
+  }
+
+  .inquiry__title {
+    margin: 0 0 0.55rem;
+    font-size: clamp(1.55rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .inquiry__support {
+    margin: 0;
+    max-width: 28rem;
+    color: rgba(238, 245, 255, 0.78);
+    line-height: 1.55;
+  }
+
+  .inquiry__contact {
+    margin-top: 1.5rem;
+    padding: 1.1rem 1.15rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 0.55rem;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .inquiry__contact-label {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(238, 245, 255, 0.7);
+  }
+
+  .inquiry__phone {
+    display: inline-block;
+    margin: 0.25rem 0 0.35rem;
+    font-size: clamp(1.55rem, 3vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .inquiry__contact-note {
+    margin: 0;
+    font-size: 0.88rem;
+    color: rgba(238, 245, 255, 0.68);
+  }
+
+  .inquiry__notes {
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .inquiry__notes li {
+    position: relative;
+    padding-left: 1.1rem;
+    font-size: 0.92rem;
+    color: rgba(238, 245, 255, 0.78);
+  }
+
+  .inquiry__notes li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.45rem;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: #6db3ff;
+  }
+
+  .inquiry__panel {
+    padding: clamp(1.4rem, 3vw, 2rem);
+  }
+
+  .inquiry__form {
+    display: grid;
+    gap: 1.05rem;
+  }
+
+  .field-row {
+    display: grid;
+    gap: 1.05rem;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.45rem;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-inline-size: 0;
+  }
+
+  .field label,
+  .field legend {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .field-hint {
+    margin: -0.15rem 0 0.15rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  .optional {
+    color: var(--color-muted);
+    font-weight: 400;
+    font-size: 0.85em;
+  }
+
+  .field input,
+  .field textarea {
+    width: 100%;
+    border: 1px solid var(--color-line);
+    border-radius: 0.45rem;
+    background: var(--color-bg);
+    padding: 0.82rem 0.9rem;
+    color: var(--color-text);
+    font: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: rgba(26, 111, 212, 0.55);
+    box-shadow: 0 0 0 3px rgba(26, 111, 212, 0.12);
+  }
+
+  .place-types {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+
+  .place-type__label,
+  .place-type__hint,
+  .symptom span,
+  .inquiry__title,
+  .inquiry__support,
+  .inquiry__notes li {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  .place-type {
+    cursor: pointer;
+  }
+
+  .place-type input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .place-type__card {
+    display: grid;
+    gap: 0.2rem;
+    min-height: 4.2rem;
+    padding: 0.85rem 0.7rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.5rem;
+    background: var(--color-bg);
+    text-align: center;
+    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .place-type__label {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  .place-type__hint {
+    font-size: 0.78rem;
+    color: var(--color-muted);
+  }
+
+  .place-type input:checked + .place-type__card {
+    border-color: rgba(26, 111, 212, 0.65);
+    background: rgba(26, 111, 212, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(26, 111, 212, 0.25);
+  }
+
+  .place-type input:focus-visible + .place-type__card {
+    box-shadow: 0 0 0 3px rgba(26, 111, 212, 0.18);
+  }
+
+  .symptoms {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  [data-symptoms-panel][hidden],
+  [data-symptom-group][hidden] {
+    display: none !important;
+  }
+
+  .symptom {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.7rem;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.45rem;
+    background: var(--color-bg);
+    cursor: pointer;
+    font-size: 0.94rem;
+    line-height: 1.35;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .symptom:has(input:checked) {
+    border-color: rgba(26, 111, 212, 0.55);
+    background: rgba(26, 111, 212, 0.07);
+  }
+
+  .symptom input {
+    flex: 0 0 auto;
+    width: 1.05rem;
+    height: 1.05rem;
+    margin: 0;
+  }
+
+  .symptom span {
+    flex: 1 1 auto;
+    word-break: keep-all;
+  }
+
+  .consent-row {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.55rem;
+    margin: 0.1rem 0 0;
+  }
+
+  .consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    cursor: pointer;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--color-text);
+    word-break: keep-all;
+  }
+
+  .consent input {
+    flex: 0 0 auto;
+    width: 1.05rem;
+    height: 1.05rem;
+    margin: 0.15rem 0 0;
+  }
+
+  .consent span {
+    flex: 1 1 auto;
+  }
+
+  .consent__view {
+    flex: 0 0 auto;
+    margin-top: 0.05rem;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--color-accent);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    cursor: pointer;
+  }
+
+  .consent__view:hover {
+    opacity: 0.85;
+  }
+
+  .privacy-dialog {
+    width: min(26rem, calc(100vw - 2rem));
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--color-line);
+    border-radius: 0.65rem;
+    background: var(--color-bg-elevated);
+    color: var(--color-text);
+    box-shadow: 0 18px 48px rgba(10, 24, 48, 0.22);
+  }
+
+  .privacy-dialog::backdrop {
+    background: rgba(8, 18, 36, 0.48);
+  }
+
+  .privacy-dialog__panel {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem 1.2rem 1.2rem;
+  }
+
+  .privacy-dialog__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .privacy-dialog__head h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    line-height: 1.35;
+    word-break: keep-all;
+  }
+
+  .privacy-dialog__close {
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    color: var(--color-muted);
+    font-size: 1.45rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0.1rem 0.25rem;
+  }
+
+  .privacy-dialog__list {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+  }
+
+  .privacy-dialog__list div {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .privacy-dialog__list dt {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-accent);
+  }
+
+  .privacy-dialog__list dd {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    word-break: keep-all;
+    color: var(--color-text);
+  }
+
+  .privacy-dialog__note {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--color-muted);
+    word-break: keep-all;
+  }
+
+  .privacy-dialog__ok {
+    width: 100%;
+    min-height: 2.7rem;
+  }
+
+  .inquiry__actions {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: 0.25rem;
+  }
+
+  .inquiry__submit {
+    width: 100%;
+    min-height: 3rem;
+  }
+
+  .inquiry__fine {
+    margin: 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  .inquiry__status {
+    margin: 0.15rem 0 0;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .inquiry__status[data-kind="ok"] {
+    color: var(--color-accent);
+  }
+
+  .inquiry__status[data-kind="error"] {
+    color: #c45a5a;
+  }
+
+  @media (min-width: 480px) {
+    .place-types {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 560px) {
+    .field-row {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .symptoms {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 860px) {
+    .inquiry__shell {
+      grid-template-columns: minmax(15rem, 0.9fr) minmax(0, 1.25fr);
+    }
+
+    .inquiry__aside {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100%;
+    }
+
+    .inquiry__panel {
+      padding: 2rem 2.1rem 2.15rem;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .inquiry__panel {
+      padding: 1.15rem 1rem 1.35rem;
+    }
+
+    .place-type__card {
+      min-height: 3.25rem;
+      padding: 0.8rem 0.9rem;
+      text-align: left;
+    }
+  }
+</style>

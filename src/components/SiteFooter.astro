@@ -1,0 +1,49 @@
+---
+import { yangsanSulbi as site } from "../site/config";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <p class="site-footer__brand display">{site.copy.brand}</p>
+    <p class="muted">
+      {site.region} · <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
+    </p>
+    <p class="muted site-footer__keywords">{site.regionKeywords.join(" · ")}</p>
+    <p class="muted site-footer__copy">© {year} {site.businessName}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-line);
+    padding: 2.5rem 0 3rem;
+    margin-top: 4rem;
+  }
+
+  .site-footer__inner {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .site-footer__brand {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  .site-footer__keywords {
+    margin: 0.35rem 0 0;
+    font-size: 0.85rem;
+  }
+
+  .site-footer__copy {
+    margin: 0.6rem 0 0;
+    font-size: 0.85rem;
+  }
+
+  .site-footer p {
+    margin: 0;
+  }
+</style>

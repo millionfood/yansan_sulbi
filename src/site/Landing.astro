@@ -1,0 +1,1213 @@
+---
+import InquiryForm from "../components/InquiryForm.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { yangsanSulbi as site } from "./config";
+import { yangsanContent as c } from "./content";
+
+const img = site.media.placeholder;
+---
+
+<SiteHeader />
+<main id="main">
+  <section class="hero" aria-label="소개">
+    <div class="hero__media" aria-hidden="true">
+      <img
+        class="hero__img"
+        src={img}
+        alt=""
+        width="1600"
+        height="1000"
+        decoding="async"
+        fetchpriority="high"
+      />
+      <div class="hero__veil"></div>
+      <div class="hero__grid"></div>
+    </div>
+
+    <div class="container hero__layout">
+      <div class="hero__copy">
+        <p class="hero__brand display">{site.copy.brand}</p>
+        <p class="hero__eyebrow">{c.hero.eyebrow}</p>
+        <h1 class="hero__headline display">
+          {
+            site.copy.headline.split("\n").map((line, i, arr) => (
+              <>
+                {i === 0 ? (
+                  line
+                ) : (
+                  <span class="hero__accent">{line}</span>
+                )}
+                {i < arr.length - 1 && <br />}
+              </>
+            ))
+          }
+        </h1>
+        <p class="hero__support">
+          {
+            site.copy.support.split("\n").map((line, i, arr) => (
+              <>
+                {line}
+                {i < arr.length - 1 && <br />}
+              </>
+            ))
+          }
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn-primary" href={`tel:${site.phone}`}>{site.copy.ctaCall}</a>
+          <a class="btn btn-ghost hero__ghost" href="#inquiry">{site.copy.ctaPrimary}</a>
+        </div>
+      </div>
+
+      <aside class="hero__card" aria-label="상담 안내">
+        <p class="hero__card-label">{c.hero.phoneCardTitle}</p>
+        <a class="hero__card-phone display" href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
+        <p class="hero__card-note">{c.hero.phoneCardNote}</p>
+        <ul class="hero__guarantees">
+          {c.hero.guarantees.map((g) => <li>{g}</li>)}
+        </ul>
+        <a class="btn btn-primary hero__card-cta" href="#inquiry">{site.copy.ctaPrimary}</a>
+      </aside>
+    </div>
+  </section>
+
+  <section class="strip" aria-label="핵심 약속">
+    <div class="container">
+      <div class="strip__grid">
+        {
+          c.promises.map((item) => (
+            <article class="strip__item">
+              <div class="strip__title-row">
+                <span class={`strip__icon strip__icon--${item.icon}`} aria-hidden="true">
+                  {item.icon === "inspect" && (
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.8" />
+                      <path d="M16 16.5 20 20.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                      <path d="M8.5 11h5M11 8.5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                  )}
+                  {item.icon === "scope" && (
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M7 12.5 10.2 15.7 17 8.5"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <rect x="3.5" y="3.5" width="17" height="17" rx="4" stroke="currentColor" stroke-width="1.8" />
+                    </svg>
+                  )}
+                  {item.icon === "estimate" && (
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M7 3.8h7.2L19 8.6V20.2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4.8a1 1 0 0 1 1-1Z"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linejoin="round"
+                      />
+                      <path d="M14 3.8V8.5h4.8" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                      <path d="M8.5 13h7M8.5 16.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                  )}
+                </span>
+                <h2 class="display">{item.title}</h2>
+              </div>
+              <p class="muted">{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section problems" id="problems" aria-labelledby="problems-title">
+    <div class="container">
+      <p class="eyebrow">{c.problems.eyebrow}</p>
+      <h2 id="problems-title" class="section-title display">{c.problems.title}</h2>
+      <p class="section-support muted">{c.problems.support}</p>
+      <div class="problems__grid">
+        {
+          c.problems.items.map((item) => (
+            <a class="problem-card" href={item.href}>
+              <h3 class="display">{item.title}</h3>
+              <p class="muted">{item.body}</p>
+              <span class="problem-card__go">문의로 이동</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 회사소개 + 현장 책임 -->
+  <section class="section about" id="about" aria-labelledby="about-title">
+    <div class="container">
+      <div class="about__head">
+        <p class="eyebrow">{c.intro.eyebrow}</p>
+        <h2 id="about-title" class="section-title display">{c.intro.title}</h2>
+      </div>
+
+      <div class="about__board">
+        <figure class="about__media">
+          <img src={img} alt={c.imgAlt} width="960" height="720" loading="lazy" decoding="async" />
+        </figure>
+
+        <div class="about__body">
+          <p class="lead">{c.intro.lead}</p>
+          {c.intro.paragraphs.map((p) => <p class="body muted">{p}</p>)}
+
+          <div class="about__crew">
+            <p class="crew__role">{c.crew.role}</p>
+            <p class="crew__name display">{c.crew.name}</p>
+            <p class="muted">{c.crew.note}</p>
+            <ul class="crew__points">
+              {c.crew.points.map((point) => <li>{point}</li>)}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section services" id="service" aria-labelledby="service-title">
+    <div class="container">
+      <p class="eyebrow">{c.services.eyebrow}</p>
+      <h2 id="service-title" class="section-title display">{c.services.title}</h2>
+      <p class="section-support muted">{c.services.support}</p>
+      <div class="services__grid">
+        {
+          c.services.items.map((item) => (
+            <article class="service-card">
+              <h3 class="display">{item.title}</h3>
+              <p class="muted">{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 현장 기록·증거 -->
+  <section class="section records" id="records" aria-labelledby="records-title">
+    <div class="container">
+      <p class="eyebrow eyebrow--on-dark">{c.records.eyebrow}</p>
+      <h2 id="records-title" class="section-title display">{c.records.title}</h2>
+      <p class="section-support records__support">{c.records.support}</p>
+
+      <div class="records__deliverables">
+        {
+          c.records.deliverables.map((item, i) => (
+            <article class="deliverable">
+              <span class="deliverable__num display">{String(i + 1).padStart(2, "0")}</span>
+              <h3 class="display">{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="records__cases">
+        {
+          c.records.cases.map((item) => (
+            <article class="case-card">
+              <div class="case-card__shot">
+                <img src={img} alt="" width="640" height="400" loading="lazy" decoding="async" />
+                <div class="case-card__tags">
+                  <span>{item.label}</span>
+                </div>
+              </div>
+              <div class="case-card__body">
+                <p class="case-card__place">{item.place}</p>
+                <h3 class="display">{item.issue}</h3>
+                <p>{item.result}</p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 비용·거주중 안내 -->
+  <section class="section prep" id="prep" aria-labelledby="prep-title">
+    <div class="container">
+      <p class="eyebrow">{c.prep.eyebrow}</p>
+      <h2 id="prep-title" class="section-title display">{c.prep.title}</h2>
+      <p class="section-support muted">{c.prep.support}</p>
+
+      <div class="prep__grid">
+        <article class="prep-card">
+          <h3 class="display">{c.prep.cost.title}</h3>
+          <ul>
+            {c.prep.cost.points.map((point) => <li>{point}</li>)}
+          </ul>
+        </article>
+        <article class="prep-card">
+          <h3 class="display">{c.prep.living.title}</h3>
+          <ul>
+            {c.prep.living.points.map((point) => <li>{point}</li>)}
+          </ul>
+        </article>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section process" id="process" aria-labelledby="process-title">
+    <div class="container">
+      <p class="eyebrow eyebrow--on-dark">{c.process.eyebrow}</p>
+      <h2 id="process-title" class="section-title display">{c.process.title}</h2>
+      <p class="section-support process__support">{c.process.support}</p>
+      <ol class="process__steps">
+        {
+          c.process.steps.map((step) => (
+            <li>
+              <span class="process__num display">{step.num}</span>
+              <h3 class="display">{step.title}</h3>
+              <p>{step.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section areas" id="area" aria-labelledby="area-title">
+    <div class="container areas__grid">
+      <div>
+        <p class="eyebrow">{c.areas.eyebrow}</p>
+        <h2 id="area-title" class="section-title display">{c.areas.title}</h2>
+        <p class="muted">{c.areas.support}</p>
+        <ul class="areas__list">
+          {c.areas.list.map((area) => <li>{area}</li>)}
+        </ul>
+      </div>
+      <figure class="media-frame areas__map">
+        <img src={img} alt={c.imgAlt} width="900" height="700" loading="lazy" decoding="async" />
+        <figcaption>양산 관내 출동 구역 안내 (이미지 교체 예정)</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section faq" aria-labelledby="faq-title">
+    <div class="container">
+      <div class="faq__head">
+        <div>
+          <p class="eyebrow">{c.faq.eyebrow}</p>
+          <h2 id="faq-title" class="section-title display">{c.faq.title}</h2>
+        </div>
+        <p class="faq__support muted">{c.faq.support}</p>
+      </div>
+      <div class="faq__list">
+        {
+          c.faq.items.map((item) => (
+            <details class="faq__item">
+              <summary>
+                <span>{item.q}</span>
+                <span class="faq__icon" aria-hidden="true"></span>
+              </summary>
+              <p>{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <InquiryForm />
+</main>
+<SiteFooter />
+
+<style>
+  :global(body[data-site="yangsan_sulbi"] .site-header:not([data-scrolled="true"])) {
+    color: #eef5ff;
+  }
+
+  :global(body[data-site="yangsan_sulbi"] .site-header:not([data-scrolled="true"]) .site-header__nav a) {
+    color: rgba(238, 245, 255, 0.82);
+  }
+
+  :global(body[data-site="yangsan_sulbi"] .site-header:not([data-scrolled="true"]) .site-header__phone) {
+    color: #eef5ff;
+  }
+
+  :global(body[data-site="yangsan_sulbi"] .site-header:not([data-scrolled="true"]) .site-header__menu) {
+    background: transparent;
+    border-color: rgba(238, 245, 255, 0.35);
+    color: #eef5ff;
+  }
+
+  :global(body[data-site="yangsan_sulbi"]) {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--color-accent);
+  }
+
+  .eyebrow--on-dark {
+    color: #7eb6ff;
+  }
+
+  .section {
+    padding: clamp(3.5rem, 7vw, 5.5rem) 0;
+  }
+
+  .section-title {
+    margin: 0;
+    font-size: clamp(1.55rem, 3.2vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.3;
+    max-width: min(100%, 22rem);
+  }
+
+  .section-support,
+  .lead,
+  .body {
+    margin: 1rem 0 0;
+    font-size: 1.05rem;
+    max-width: 42rem;
+  }
+
+  .lead {
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .media-frame {
+    margin: 0;
+    overflow: hidden;
+    border-radius: 0.35rem;
+  }
+
+  .media-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 4 / 5;
+    display: block;
+  }
+
+  /* —— Hero —— */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    color: #eef5ff;
+    margin-top: -4.2rem;
+    padding: 6.5rem 0 4rem;
+    overflow: hidden;
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: veil-in 1s ease both;
+  }
+
+  .hero__veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(105deg, rgba(7, 24, 51, 0.92) 0%, rgba(7, 24, 51, 0.72) 48%, rgba(7, 24, 51, 0.55) 100%),
+      linear-gradient(180deg, rgba(7, 24, 51, 0.35), rgba(7, 24, 51, 0.15) 40%, rgba(240, 245, 251, 0.95) 100%);
+  }
+
+  .hero__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(180deg, #000 40%, transparent 95%);
+    pointer-events: none;
+  }
+
+  .hero__layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1.75rem;
+  }
+
+  .hero__brand {
+    margin: 0 0 0.85rem;
+    font-size: clamp(2.4rem, 7vw, 4.1rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    animation: rise-in 0.7s ease both;
+  }
+
+  .hero__eyebrow {
+    margin: 0 0 0.85rem;
+    color: rgba(238, 245, 255, 0.72);
+    font-size: 0.95rem;
+    animation: rise-in 0.7s ease 0.05s both;
+  }
+
+  .hero__headline {
+    margin: 0 0 1rem;
+    font-size: clamp(1.35rem, 3vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.4;
+    max-width: none;
+    word-break: keep-all;
+    animation: rise-in 0.75s ease 0.1s both;
+  }
+
+  .hero__accent {
+    display: block;
+    color: #6db3ff;
+  }
+
+  .hero__support {
+    margin: 0 0 1.5rem;
+    color: rgba(238, 245, 255, 0.82);
+    max-width: min(100%, 28rem);
+    line-height: 1.55;
+    word-break: keep-all;
+    animation: rise-in 0.75s ease 0.14s both;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    animation: rise-in 0.75s ease 0.18s both;
+  }
+
+  .hero__ghost {
+    border-color: rgba(238, 245, 255, 0.35);
+    color: #eef5ff;
+  }
+
+  .hero__card {
+    background: rgba(8, 28, 58, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 0.75rem;
+    padding: 1.4rem 1.35rem 1.5rem;
+    backdrop-filter: blur(10px);
+    align-self: center;
+    animation: rise-in 0.8s ease 0.16s both;
+  }
+
+  .hero__card-label {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(238, 245, 255, 0.75);
+  }
+
+  .hero__card-phone {
+    display: inline-block;
+    margin: 0.35rem 0;
+    font-size: clamp(1.8rem, 4vw, 2.35rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    color: #fff;
+  }
+
+  .hero__card-note {
+    margin: 0 0 1rem;
+    color: rgba(238, 245, 255, 0.7);
+    font-size: 0.9rem;
+  }
+
+  .hero__guarantees {
+    list-style: none;
+    margin: 0 0 1.2rem;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .hero__guarantees li {
+    position: relative;
+    padding-left: 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .hero__guarantees li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.45rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  .hero__card-cta {
+    width: 100%;
+  }
+
+  /* —— Promises —— */
+  .strip {
+    margin-top: -1.5rem;
+    position: relative;
+    z-index: 2;
+    padding: 0 0 0.5rem;
+  }
+
+  .strip .container {
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-line);
+    border-radius: 0.75rem;
+    padding: clamp(1.2rem, 2.5vw, 1.6rem) clamp(1.2rem, 3vw, 1.8rem);
+    box-shadow: 0 18px 40px rgba(11, 28, 51, 0.08);
+  }
+
+  .strip__grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .strip__title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .strip__icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.45rem;
+    background: rgba(26, 111, 212, 0.1);
+    color: var(--color-accent);
+  }
+
+  .strip__icon svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .strip__item h2 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .strip__item p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+
+  /* —— Problems —— */
+  .problems__grid {
+    display: grid;
+    gap: 0.85rem;
+    margin-top: 1.75rem;
+  }
+
+  .problem-card {
+    display: grid;
+    gap: 0.4rem;
+    padding: 1.15rem 1.2rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.5rem;
+    background: var(--color-bg-elevated);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .problem-card:hover,
+  .problem-card:focus-visible {
+    border-color: rgba(26, 111, 212, 0.45);
+    background: #fff;
+  }
+
+  .problem-card h3 {
+    margin: 0;
+    font-size: 1.12rem;
+  }
+
+  .problem-card p {
+    margin: 0;
+  }
+
+  .problem-card__go {
+    margin-top: 0.35rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  /* —— About —— */
+  .about__head {
+    margin-bottom: 1.5rem;
+  }
+
+  .about .section-title {
+    max-width: none;
+    white-space: pre-line;
+  }
+
+  .problems .section-title,
+  .services .section-title,
+  .records .section-title {
+    max-width: none;
+    white-space: nowrap;
+  }
+
+  .about__board {
+    display: grid;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: 0.75rem;
+    background: var(--color-bg-elevated);
+  }
+
+  .about__media {
+    position: relative;
+    margin: 0;
+    background: #0a1f3d;
+  }
+
+  .about__media img {
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    object-fit: cover;
+    display: block;
+  }
+
+  .about__badge {
+    position: absolute;
+    left: 0.9rem;
+    bottom: 0.9rem;
+    margin: 0;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.3rem;
+    background: rgba(7, 24, 51, 0.8);
+    color: #eef5ff;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .about__body {
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+  }
+
+  .about__body .lead {
+    margin-top: 0;
+  }
+
+  .about__crew {
+    margin-top: 1.35rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .crew__role {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  .crew__name {
+    margin: 0.25rem 0 0.55rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .crew__points {
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .crew__points li {
+    position: relative;
+    padding-left: 1rem;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+
+  .crew__points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  /* —— Services —— */
+  .services {
+    background: var(--color-bg-elevated);
+    border-block: 1px solid var(--color-line);
+  }
+
+  .services__grid {
+    display: grid;
+    gap: 0.85rem;
+    margin-top: 1.75rem;
+  }
+
+  .service-card {
+    padding: 1.2rem 1.25rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.5rem;
+    background: var(--color-bg);
+  }
+
+  .service-card h3 {
+    margin: 0 0 0.45rem;
+    font-size: 1.12rem;
+  }
+
+  .service-card p {
+    margin: 0;
+  }
+
+  /* —— Records (dark, local field — not corporate portfolio) —— */
+  .records {
+    background: #0a1f3d;
+    color: #eef5ff;
+  }
+
+  .records__support {
+    color: rgba(238, 245, 255, 0.72);
+  }
+
+  .records__deliverables {
+    display: grid;
+    gap: 0.85rem;
+    margin-top: 1.75rem;
+  }
+
+  .deliverable {
+    padding: 1.1rem 1.15rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .deliverable__num {
+    display: block;
+    margin-bottom: 0.3rem;
+    color: #7eb6ff;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .deliverable h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.08rem;
+  }
+
+  .deliverable p {
+    margin: 0;
+    color: rgba(238, 245, 255, 0.72);
+    font-size: 0.95rem;
+  }
+
+  .records__cases {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .case-card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0.55rem;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .case-card__shot {
+    position: relative;
+  }
+
+  .case-card__shot img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.85);
+  }
+
+  .case-card__tags {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .case-card__tags span {
+    padding: 0.28rem 0.55rem;
+    border-radius: 0.28rem;
+    background: rgba(7, 24, 51, 0.8);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .case-card__body {
+    padding: 1.05rem 1.15rem 1.2rem;
+  }
+
+  .case-card__place {
+    margin: 0 0 0.25rem;
+    color: #7eb6ff;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .case-card__body h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1.1rem;
+  }
+
+  .case-card__body p {
+    margin: 0;
+    color: rgba(238, 245, 255, 0.72);
+    font-size: 0.95rem;
+  }
+
+  /* —— Prep guide —— */
+  .prep .section-title {
+    max-width: none;
+    white-space: nowrap;
+  }
+
+  .prep__grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.75rem;
+  }
+
+  .prep-card {
+    padding: 1.3rem 1.25rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.55rem;
+    background: var(--color-bg-elevated);
+  }
+
+  .prep-card h3 {
+    margin: 0 0 0.85rem;
+    font-size: 1.12rem;
+  }
+
+  .prep-card ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .prep-card li {
+    position: relative;
+    padding-left: 1.05rem;
+    color: var(--color-muted);
+    line-height: 1.5;
+  }
+
+  .prep-card li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  /* —— Process —— */
+  .process {
+    background: linear-gradient(160deg, var(--color-navy), var(--color-navy-2));
+    color: #eef5ff;
+  }
+
+  .process__support {
+    color: rgba(238, 245, 255, 0.72);
+  }
+
+  .process__steps {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .process__steps li {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    padding: 1.15rem 1.2rem;
+  }
+
+  .process__num {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: #7eb6ff;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .process__steps h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1.1rem;
+  }
+
+  .process__steps p {
+    margin: 0;
+    color: rgba(238, 245, 255, 0.75);
+    font-size: 0.95rem;
+  }
+
+  /* —— Areas —— */
+  .areas__grid {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .areas__list {
+    list-style: none;
+    margin: 1.4rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .areas__list li {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--color-line);
+    font-weight: 600;
+  }
+
+  .areas__map img {
+    aspect-ratio: 5 / 4;
+  }
+
+  .areas__map figcaption {
+    margin-top: 0.55rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  /* —— FAQ —— */
+  .faq__head {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .faq .section-title {
+    max-width: none;
+  }
+
+  .faq__support {
+    margin: 0;
+    max-width: 36rem;
+    font-size: 1.02rem;
+  }
+
+  .faq__list {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .faq__item {
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-line);
+    border-radius: 0.5rem;
+    padding: 0;
+  }
+
+  .faq__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    cursor: pointer;
+    font-weight: 700;
+    list-style: none;
+    padding: 1rem 1.15rem;
+  }
+
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__icon {
+    flex: 0 0 auto;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-right: 2px solid var(--color-accent);
+    border-bottom: 2px solid var(--color-accent);
+    transform: rotate(45deg);
+    transition: transform 0.15s ease;
+    margin-top: -0.2rem;
+  }
+
+  .faq__item[open] .faq__icon {
+    transform: rotate(225deg);
+    margin-top: 0.15rem;
+  }
+
+  .faq__item p {
+    margin: 0;
+    padding: 0 1.15rem 1.05rem;
+    color: var(--color-muted);
+    line-height: 1.65;
+    border-top: 1px solid transparent;
+  }
+
+  @media (min-width: 640px) {
+    .strip__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .strip__item {
+      border-left: 1px solid var(--color-line);
+      padding-left: 1.1rem;
+    }
+
+    .strip__item:first-child {
+      border-left: 0;
+      padding-left: 0;
+    }
+
+    .problems__grid,
+    .services__grid,
+    .prep__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .process__steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .records__deliverables {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .records__cases {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 860px) {
+    .hero__layout {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .about__board {
+      grid-template-columns: 1.05fr 1fr;
+      align-items: stretch;
+    }
+
+    .about__media {
+      min-height: 100%;
+    }
+
+    .about__media img {
+      height: 100%;
+      aspect-ratio: auto;
+      min-height: 22rem;
+    }
+
+    .about__body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .areas__grid {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 3rem;
+    }
+
+    .faq__head {
+      grid-template-columns: minmax(0, 1fr) minmax(12rem, 20rem);
+      align-items: end;
+      gap: 1.5rem 2rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .faq__support {
+      text-align: right;
+      max-width: none;
+    }
+
+    .faq__list {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    .faq__item {
+      align-self: start;
+    }
+
+    .process__steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .records__cases {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .process__steps {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 480px) {
+    :global(body[data-site="yangsan_sulbi"] .container) {
+      width: min(1120px, calc(100% - 1.5rem));
+    }
+
+    .hero {
+      padding: 5.5rem 0 3rem;
+    }
+
+    .hero__actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .hero__actions .btn {
+      width: 100%;
+    }
+
+    .section-title {
+      max-width: none;
+    }
+  }
+</style>

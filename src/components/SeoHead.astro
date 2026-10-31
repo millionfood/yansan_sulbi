@@ -1,0 +1,51 @@
+---
+import type { SiteConfig } from "../site/types";
+import { absoluteUrl, buildJsonLd, themeStyle } from "../lib/seo";
+
+type Props = {
+  site: SiteConfig;
+  path?: string;
+  title?: string;
+  description?: string;
+};
+
+const { site, path = "/", title, description } = Astro.props;
+const pageTitle = title ?? site.seo.title;
+const pageDescription = description ?? site.seo.description;
+const canonical = absoluteUrl(site, path);
+const ogImage = absoluteUrl(site, site.seo.ogImagePath);
+const jsonLd = buildJsonLd(site, canonical);
+const keywords = site.regionKeywords.join(", ");
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{pageTitle}</title>
+<meta name="description" content={pageDescription} />
+<meta name="keywords" content={keywords} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content="index,follow" />
+
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="ko_KR" />
+<meta property="og:site_name" content={site.businessName} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={pageDescription} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={pageDescription} />
+<meta name="twitter:image" content={ogImage} />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href={`https://fonts.googleapis.com/css2?${site.theme.fontQuery}&display=swap`}
+/>
+
+<style is:inline set:html={themeStyle(site)}></style>
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
